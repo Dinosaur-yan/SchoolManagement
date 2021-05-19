@@ -1,0 +1,24 @@
+﻿@*
+	弱类型视图
+	@using SchoolManagement.Models
+	@{
+	var student = ViewData["Student"] as Student;
+	}*@
+
+@*强类型视图*@
+@model SchoolManagement.ViewModels.HomeDetailsViewModel
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Student Details";
+}
+
+<h3>@Model.PageTitle</h3>
+<div>
+ 姓名：@Model.Student.Name
+</div>
+<div>
+ 邮箱：@Model.Student.Email
+</div>
+<div>
+ 主修科目：@Model.Student.Major
+</div>
