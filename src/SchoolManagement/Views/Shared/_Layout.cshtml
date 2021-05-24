@@ -3,13 +3,19 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width" />
+	<link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+	<link href="~/lib/jquery/js/jquery.js" />
+	<link href="~/lib/bootstrap/js/bootstrap.js" />
 	<title>@ViewBag.Title</title>
 </head>
 <body>
-	<div>
+	<div class="container">
 		@RenderBody()
 	</div>
 
-	@RenderSection("Scripts", required: false)
+	@if (IsSectionDefined("Scripts"))
+	{
+		RenderSection("Scripts", required: false);
+	}
 </body>
 </html>

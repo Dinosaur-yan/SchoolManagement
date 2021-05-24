@@ -12,7 +12,7 @@ namespace SchoolManagement
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(a => a.EnableEndpointRouting = false).AddXmlSerializerFormatters();
+            services.AddControllersWithViews().AddXmlSerializerFormatters();
 
             services.AddSingleton<IStudentRepository, MockStudentRepository>();
         }
@@ -27,7 +27,13 @@ namespace SchoolManagement
 
             app.UseStaticFiles();
 
-            app.UseMvcWithDefaultRoute();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name:"default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
