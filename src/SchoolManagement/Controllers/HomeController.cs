@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.DataRepositories;
+using SchoolManagement.Models;
 using SchoolManagement.ViewModels;
 
 namespace SchoolManagement.Controllers
@@ -7,6 +8,7 @@ namespace SchoolManagement.Controllers
     public class HomeController : Controller
     {
         private readonly IStudentRepository _studentRepository;
+
         public HomeController(IStudentRepository studentRepository)
         {
             _studentRepository = studentRepository;
@@ -18,11 +20,11 @@ namespace SchoolManagement.Controllers
             return View(model);
         }
 
-        public ViewResult Details()
+        public ViewResult Details(int id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel
             {
-                Student = _studentRepository.GetStudent(1),
+                Student = _studentRepository.GetStudent(id),
                 PageTitle = "学生详情"
             };
             //ViewBag.PageTitle = "学生详情";
@@ -30,9 +32,17 @@ namespace SchoolManagement.Controllers
             return View(homeDetailsViewModel);
         }
 
+        [HttpGet]
         public ViewResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public RedirectToActionResult Create(Student student)
+        {
+            Student newStudent = _studentRepository.Add(student);
+            return RedirectToAction(nameof(Details), new { id = student.Id });
         }
     }
 }

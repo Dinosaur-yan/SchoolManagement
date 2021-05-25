@@ -1,18 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagement.Models
 {
+    /// <summary>
+    /// 主修科目
+    /// </summary>
     public enum MajorEnum
     {
+        /// <summary>
+        /// 未分配
+        /// </summary>
+        [Display(Name = "未分配")]
         None,
 
-        FirstGrade,
+        /// <summary>
+        /// 计算机科学
+        /// </summary>
+        [Display(Name = "计算机科学")]
+        ComputerScience,
 
-        SecondGrade,
+        /// <summary>
+        /// 电子商务
+        /// </summary>
+        [Display(Name = "电子商务")]
+        ElectronicCommerce,
 
-        GradeThree
+        /// <summary>
+        /// 数学
+        /// </summary>
+        [Display(Name = "数学")]
+        Mathematics
     }
 }

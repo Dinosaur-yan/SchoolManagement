@@ -12,9 +12,9 @@ namespace SchoolManagement.DataRepositories
         {
             _studentList = new List<Student>
             {
-                new Student { Id = 1, Name = "张三", Major = "计算机科学", Email = "zhangsan@52abp.com" },
-                new Student { Id = 2, Name = "李四", Major = "物流", Email = "lisi@52abp.com" },
-                new Student { Id = 3, Name = "赵六", Major = "电商管理", Email = "zhaoliu@52abp.com" }
+                new Student { Id = 1, Name = "张三", Major = MajorEnum.ComputerScience, Email = "zhangsan@52abp.com" },
+                new Student { Id = 2, Name = "李四", Major = MajorEnum.Mathematics, Email = "lisi@52abp.com" },
+                new Student { Id = 3, Name = "赵六", Major = MajorEnum.ElectronicCommerce, Email = "zhaoliu@52abp.com" }
             };
         }
 
@@ -26,6 +26,13 @@ namespace SchoolManagement.DataRepositories
         public Student GetStudent(int id)
         {
             return _studentList.FirstOrDefault(a => a.Id == id);
+        }
+
+        public Student Add(Student student)
+        {
+            student.Id = _studentList.Max(s => s.Id) + 1;
+            _studentList.Add(student);
+            return student;
         }
     }
 }
