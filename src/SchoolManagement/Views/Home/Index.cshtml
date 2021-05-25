@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<Student>
-
 @{
 	ViewBag.Title = "学生列表页面";
 }
@@ -13,16 +12,16 @@
 	   <h3 class="card-title">@student.Name</h3>
 	  </div>
 
-	  <img class="card-img-top" src="~/images/noimage.png" />
+	  <img asp-append-version="true" class="card-img-top" src="~/images/noimage.png" />
 
 	  <div class="card-body text-center">
 	   <h5 class="card-title">主修科目:@student.Major</h5>
 	  </div>
 
 	  <div class="card-footer text-center">
-	   <a href="#" class="btn btn-info">查看</a>
-	   <a href="#" class="btn btn-primary">编辑</a>
-	   <a href="#" class="btn btn-danger">删除</a>
+	   <a asp-controller="home" asp-action="details" asp-route-id="@student.Id" class="btn btn-info m-1">查看</a>
+	   <a href="#" class="btn btn-primary m-1">编辑</a>
+	   <a href="#" class="btn btn-danger m-1">删除</a>
 	  </div>
 
 	 </div>

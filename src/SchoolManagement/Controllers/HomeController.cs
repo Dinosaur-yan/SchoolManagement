@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.DataRepositories;
-using SchoolManagement.Models;
 using SchoolManagement.ViewModels;
 
 namespace SchoolManagement.Controllers
@@ -29,6 +28,11 @@ namespace SchoolManagement.Controllers
             //ViewBag.PageTitle = "学生详情";
             //ViewData["Student"] = model;
             return View(homeDetailsViewModel);
+        }
+
+        public ViewResult Create()
+        {
+            return View();
         }
     }
 }
