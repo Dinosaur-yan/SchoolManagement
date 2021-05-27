@@ -18,5 +18,7 @@ namespace SchoolManagement.Models
         [Required(ErrorMessage = "请输入邮箱地址，它不能为空")]
         [EmailAddress(ErrorMessage = "邮箱的格式不正确")]
         public string Email { get; set; }
+
+        public string PhotoPath { get; set; }
     }
 }

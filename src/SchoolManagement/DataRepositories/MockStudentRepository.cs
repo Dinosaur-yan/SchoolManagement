@@ -19,20 +19,43 @@ namespace SchoolManagement.DataRepositories
             };
         }
 
+        public Student Delete(int id)
+        {
+            Student student = _studentList.FirstOrDefault(a => a.Id == id);
+            if (student != null)
+            {
+                _studentList.Remove(student);
+            }
+            return student;
+        }
+
         public IEnumerable<Student> GetAllStudents()
         {
             return _studentList;
         }
 
-        public Student GetStudent(int id)
+        public Student GetStudentById(int id)
         {
             return _studentList.FirstOrDefault(a => a.Id == id);
         }
 
-        public Student Add(Student student)
+        public Student Insert(Student student)
         {
             student.Id = _studentList.Max(s => s.Id) + 1;
             _studentList.Add(student);
+            return student;
+        }
+
+        public Student Update(Student updateStudent)
+        {
+
+            Student student = _studentList.FirstOrDefault(a => a.Id == updateStudent.Id);
+            if (student != null)
+            {
+                student.Name = updateStudent.Name;
+                student.Email = updateStudent.Email;
+                student.Major = updateStudent.Major;
+            }
             return student;
         }
     }

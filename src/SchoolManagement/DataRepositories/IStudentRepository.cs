@@ -5,10 +5,38 @@ namespace SchoolManagement.DataRepositories
 {
     public interface IStudentRepository
     {
-        Student GetStudent(int id);
+        /// <summary>
+        /// 通过id获取学生信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Student GetStudentById(int id);
 
+        /// <summary>
+        /// 获取所有的学生信息
+        /// </summary>
+        /// <returns></returns>
         IEnumerable<Student> GetAllStudents();
 
-        Student Add(Student student);
+        /// <summary>
+        /// 添加学生信息
+        /// </summary>
+        /// <param name="student"></param>
+        /// <returns></returns>
+        Student Insert(Student student);
+
+        /// <summary>
+        /// 修改学生信息
+        /// </summary>
+        /// <param name="updateStudent"></param>
+        /// <returns></returns>
+        Student Update(Student updateStudent);
+
+        /// <summary>
+        /// 删除学生信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Student Delete(int id);
     }
 }

@@ -2,6 +2,7 @@
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Models;
 using SchoolManagement.ViewModels;
+using System.Collections.Generic;
 
 namespace SchoolManagement.Controllers
 {
@@ -16,15 +17,15 @@ namespace SchoolManagement.Controllers
 
         public ViewResult Index()
         {
-            var model = _studentRepository.GetAllStudents();
-            return View(model);
+            IEnumerable<Student> students = _studentRepository.GetAllStudents();
+            return View(students);
         }
 
         public ViewResult Details(int id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel
             {
-                Student = _studentRepository.GetStudent(id),
+                Student = _studentRepository.GetStudentById(id),
                 PageTitle = "学生详情"
             };
             //ViewBag.PageTitle = "学生详情";
@@ -43,7 +44,7 @@ namespace SchoolManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                Student newStudent = _studentRepository.Add(student);
+                Student newStudent = _studentRepository.Insert(student);
                 return RedirectToAction(nameof(Details), new { id = student.Id });
             }
 
