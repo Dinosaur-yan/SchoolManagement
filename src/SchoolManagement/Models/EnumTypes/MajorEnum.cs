@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolManagement.Models
+namespace SchoolManagement.Models.EnumTypes
 {
     /// <summary>
     /// 主修科目

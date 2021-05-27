@@ -39,10 +39,15 @@ namespace SchoolManagement.Controllers
         }
 
         [HttpPost]
-        public RedirectToActionResult Create(Student student)
+        public IActionResult Create(Student student)
         {
-            Student newStudent = _studentRepository.Add(student);
-            return RedirectToAction(nameof(Details), new { id = student.Id });
+            if (ModelState.IsValid)
+            {
+                Student newStudent = _studentRepository.Add(student);
+                return RedirectToAction(nameof(Details), new { id = student.Id });
+            }
+
+            return View();
         }
     }
 }

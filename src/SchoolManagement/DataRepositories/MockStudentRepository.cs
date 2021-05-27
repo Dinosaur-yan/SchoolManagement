@@ -1,4 +1,5 @@
 ﻿using SchoolManagement.Models;
+using SchoolManagement.Models.EnumTypes;
 using System.Collections.Generic;
 using System.Linq;
 

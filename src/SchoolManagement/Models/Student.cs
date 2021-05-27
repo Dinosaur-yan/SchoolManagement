@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolManagement.Models.EnumTypes;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagement.Models
 {
@@ -11,7 +12,7 @@ namespace SchoolManagement.Models
         public string Name { get; set; }
 
         [Display(Name = "主修科目")]
-        public MajorEnum Major { get; set; }
+        public MajorEnum? Major { get; set; }
 
         [Display(Name = "电子邮箱")]
         [Required(ErrorMessage = "请输入邮箱地址，它不能为空")]
