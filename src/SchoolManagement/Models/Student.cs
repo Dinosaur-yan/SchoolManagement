@@ -1,24 +1,32 @@
 ﻿using SchoolManagement.Models.EnumTypes;
-using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagement.Models
 {
     public class Student
     {
+        /// <summary>
+        /// 主键
+        /// </summary>
         public int Id { get; set; }
 
-        [Display(Name = "名字")]
-        [Required(ErrorMessage = "请输入名字，它不能为空")]
+        /// <summary>
+        /// 名字
+        /// </summary>
         public string Name { get; set; }
 
-        [Display(Name = "主修科目")]
+        /// <summary>
+        /// 主修科目
+        /// </summary>
         public MajorEnum? Major { get; set; }
 
-        [Display(Name = "电子邮箱")]
-        [Required(ErrorMessage = "请输入邮箱地址，它不能为空")]
-        [EmailAddress(ErrorMessage = "邮箱的格式不正确")]
+        /// <summary>
+        /// 电子邮箱
+        /// </summary>
         public string Email { get; set; }
 
+        /// <summary>
+        /// 头像
+        /// </summary>
         public string PhotoPath { get; set; }
     }
 }

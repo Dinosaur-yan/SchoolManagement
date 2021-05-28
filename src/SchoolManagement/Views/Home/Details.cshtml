@@ -2,13 +2,14 @@
 	弱类型视图
 	@using SchoolManagement.Models
 	@{
-		var student = ViewData["Student"] as Student;
+	var student = ViewData["Student"] as Student;
 	}*@
 
 @*强类型视图*@
 @model SchoolManagement.ViewModels.HomeDetailsViewModel
 @{
 	ViewBag.Title = "学生详情";
+	var photoPath = !string.IsNullOrWhiteSpace(Model.Student.PhotoPath) ? "~/images/avatars/" + Model.Student.PhotoPath : "~/images/noimage.png";
 }
 
 <h3>@Model.PageTitle</h3>
@@ -22,7 +23,7 @@
 			</div>
 
 			<div class="card-body text-center">
-				<img asp-append-version="true" class="card-img-top" src="~/images/noimage.png" />
+				<img asp-append-version="true" class="card-img-top" src="@photoPath" />
 				<h4>姓名Id：@Model.Student.Id</h4>
 				<h4>邮箱：@Model.Student.Email</h4>
 				<h4>主修科目：@Model.Student.Major</h4>

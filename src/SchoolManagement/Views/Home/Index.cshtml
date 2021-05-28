@@ -6,13 +6,18 @@
 <div class="card-deck">
 	@foreach (var student in Model)
 	{
+		var pbotoPath = "~/images/noimage.png";
+		if (!string.IsNullOrWhiteSpace(student.PhotoPath))
+		{
+			 pbotoPath = "~/images/avatars/" + student.PhotoPath;
+		}
 		<div class="card m-3">
 
 			<div class="card-header">
 				<h3 class="card-title">@student.Name</h3>
 			</div>
 
-			<img asp-append-version="true" class="card-img-top" src="~/images/noimage.png" />
+			<img asp-append-version="true" class="card-img-top" src="@pbotoPath" />
 
 			<div class="card-body text-center">
 				<h5 class="card-title">主修科目:@student.Major</h5>
