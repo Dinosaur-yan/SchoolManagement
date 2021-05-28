@@ -26,7 +26,7 @@
 				<img asp-append-version="true" class="card-img-top" src="@photoPath" />
 				<h4>姓名Id：@Model.Student.Id</h4>
 				<h4>邮箱：@Model.Student.Email</h4>
-				<h4>主修科目：@Model.Student.Major</h4>
+				<h4>主修科目：@Model.Student.Major.GetDisplayName()</h4>
 			</div>
 
 			<div class="card-footer text-center">

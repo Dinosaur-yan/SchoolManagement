@@ -20,12 +20,12 @@
 			<img asp-append-version="true" class="card-img-top" src="@pbotoPath" />
 
 			<div class="card-body text-center">
-				<h5 class="card-title">主修科目:@student.Major</h5>
+				<h5 class="card-title">主修科目：@student.Major.GetDisplayName()</h5>
 			</div>
 
 			<div class="card-footer text-center">
 				<a asp-controller="home" asp-action="details" asp-route-id="@student.Id" class="btn btn-info m-1">查看</a>
-				<a href="#" class="btn btn-primary m-1">编辑</a>
+				<a asp-controller="home" asp-action="edit" asp-route-id="@student.Id" class="btn btn-primary m-1">编辑</a>
 				<a href="#" class="btn btn-danger m-1">删除</a>
 			</div>
 
