@@ -24,7 +24,7 @@ namespace SchoolManagement
         {
             services.AddDbContextPool<AppDbContext>(options =>
             {
-                options.UseMySql(Configuration.GetConnectionString("DefaultDbConnection"));
+                options.UseMySql(Configuration.GetConnectionString("DefaultDbConnection"), MySqlServerVersion.LatestSupportedServerVersion);
             });
 
             services.AddControllersWithViews()
