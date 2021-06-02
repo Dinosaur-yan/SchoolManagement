@@ -30,9 +30,16 @@ namespace SchoolManagement.Controllers
 
         public ViewResult Details(int id)
         {
+            Student student = _studentRepository.GetStudentById(id);
+            if (student == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return View("StudentNotFound", id);
+            }
+
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel
             {
-                Student = _studentRepository.GetStudentById(id),
+                Student = student,
                 PageTitle = "学生详情"
             };
             //ViewBag.PageTitle = "学生详情";
@@ -86,6 +93,13 @@ namespace SchoolManagement.Controllers
         public ViewResult Edit(int id)
         {
             Student student = _studentRepository.GetStudentById(id);
+
+            if (student == null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return View("StudentNotFound", id);
+            }
+
             StudentEditViewModel studentEditViewModel = new()
             {
                 Id = student.Id,

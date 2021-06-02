@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +24,7 @@ namespace SchoolManagement
         {
             services.AddDbContextPool<AppDbContext>(options =>
             {
-                options.UseMySql(Configuration.GetConnectionString("DefaultDbConnection"));
+                options.UseMySql(Configuration.GetConnectionString("DefaultDbConnection"), MySqlServerVersion.LatestSupportedServerVersion);
             });
 
             services.AddControllersWithViews()
@@ -40,6 +40,11 @@ namespace SchoolManagement
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else if (env.IsStaging() || env.IsProduction() || env.IsEnvironment("UAT"))
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");  //{0}占位符，会自动接收http中的状态码
             }
 
             app.UseStaticFiles();
