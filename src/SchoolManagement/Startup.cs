@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
 
@@ -32,6 +34,20 @@ namespace SchoolManagement
                 .AddXmlSerializerFormatters();
 
             services.AddScoped<IStudentRepository, StudentRepository>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 6;    // 密码最小长度验证
+                options.Password.RequiredUniqueChars = 3;   // 密码中允许最大的重复字符数
+                options.Password.RequireNonAlphanumeric = false;    // 密码中至少有一个非字母数字的字符
+                options.Password.RequireLowercase = false;  // 密码是否必须包含小写字母
+                options.Password.RequireUppercase = false;  // 密码是否必须包含大写字母
+                options.Password.RequireDigit = true;  // 密码是否必须包含数字
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddErrorDescriber<CustomIdentityErrorDescriber>()
+                .AddEntityFrameworkStores<AppDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +64,8 @@ namespace SchoolManagement
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
