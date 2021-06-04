@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +31,12 @@ namespace SchoolManagement
                 options.UseMySql(Configuration.GetConnectionString("DefaultDbConnection"), MySqlServerVersion.LatestSupportedServerVersion);
             });
 
-            services.AddControllersWithViews()
+            services
+                .AddControllersWithViews(configure =>
+                {
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    configure.Filters.Add(new AuthorizeFilter(policy));
+                })
                 .AddRazorRuntimeCompilation()
                 .AddXmlSerializerFormatters();
 
