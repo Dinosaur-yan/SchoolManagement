@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
+using SchoolManagement.Models;
 
 namespace SchoolManagement
 {
@@ -52,7 +53,7 @@ namespace SchoolManagement
                 options.Password.RequireDigit = true;  // 密码是否必须包含数字
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
                 .AddEntityFrameworkStores<AppDbContext>();
         }
@@ -75,6 +76,9 @@ namespace SchoolManagement
             app.UseAuthentication();
 
             app.UseRouting();
+
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

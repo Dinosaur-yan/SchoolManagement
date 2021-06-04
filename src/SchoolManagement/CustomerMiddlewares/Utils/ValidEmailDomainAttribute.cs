@@ -12,7 +12,7 @@ namespace SchoolManagement.CustomerMiddlewares.Utils
 
         public override bool IsValid(object value)
         {
-            if (value is null) 
+            if (value is null)
                 return false;
 
             string[] strings = value.ToString().Split('@');
