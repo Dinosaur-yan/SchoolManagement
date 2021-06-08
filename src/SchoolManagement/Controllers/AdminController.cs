@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SchoolManagement.Models;
 using SchoolManagement.Models.EnumTypes;
 using SchoolManagement.ViewModels;
@@ -13,11 +15,13 @@ namespace SchoolManagement.Controllers
     [Authorize(Roles = nameof(RoleEnum.Admin))]
     public class AdminController : Controller
     {
+        private readonly ILogger<AdminController> _logger;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdminController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AdminController(ILogger<AdminController> logger, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
+            _logger = logger;
             _roleManager = roleManager;
             _userManager = userManager;
         }
@@ -163,15 +167,27 @@ namespace SchoolManagement.Controllers
             }
             else
             {
-                var result = await _roleManager.DeleteAsync(role);
-                if (result.Succeeded)
+                try
                 {
-                    return RedirectToAction(nameof(ListRoles));
-                }
+                    var result = await _roleManager.DeleteAsync(role);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction(nameof(ListRoles));
+                    }
 
-                foreach (var error in result.Errors)
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+                catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", error.Description);
+                    _logger.LogError($"发生异常：{ex}");
+
+                    ViewBag.ErrorTitle = $"角色：{role.Name} 正在被使用中...";
+                    ViewBag.ErrorMessage = $"无法删除{role.Name}角色，因为此角色中已经存在用户。如果您想删除此角色，需要先从该角色中删除用户，然后尝试删除该角色本身。";
+
+                    return View("Error");
                 }
             }
             return View(nameof(ListRoles));
