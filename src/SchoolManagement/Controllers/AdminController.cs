@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Models;
+using SchoolManagement.Models.EnumTypes;
 using SchoolManagement.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SchoolManagement.Controllers
 {
+    [Authorize(Roles = nameof(RoleEnum.Admin))]
     public class AdminController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -18,6 +21,97 @@ namespace SchoolManagement.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
+
+        #region User
+
+        public IActionResult ListUsers()
+        {
+            var users = _userManager.Users.ToList();
+            return View(users);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"无法找到Id为{id}的用户";
+                return View("NotFound");
+            }
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var model = new UserEditViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                City = user.City,
+                Claims = userClaims.Select(t => t.Value).ToList(),
+                Roles = userRoles.ToList()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserEditViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"无法找到Id为{model.Id}的用户";
+                return View("NotFound");
+            }
+            else
+            {
+                user.UserName = model.UserName;
+                user.Email = model.Email;
+                user.City = model.City;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ListUsers));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"无法找到Id为{id}的用户";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ListUsers));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(nameof(ListUsers));
+        }
+
+        #endregion
+
+        #region Role
 
         [HttpGet]
         public IActionResult ListRoles()
@@ -58,6 +152,31 @@ namespace SchoolManagement.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role == null)
+            {
+                ViewBag.ErrorMessage = $"无法找到Id为{id}的用户";
+                return View("NotFound");
+            }
+            else
+            {
+                var result = await _roleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ListRoles));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(nameof(ListRoles));
+        }
+
         [HttpGet]
         public async Task<IActionResult> EditRole(string id)
         {
@@ -66,7 +185,7 @@ namespace SchoolManagement.Controllers
             if (role == null)
             {
                 ViewBag.ErrorMessage = $"角色Id={id}的信息不存在，请重试。";
-                return View("../Error/NotFound");
+                return View("NotFound");
             }
 
             var model = new RoleEditViewModel
@@ -95,7 +214,7 @@ namespace SchoolManagement.Controllers
             if (role == null)
             {
                 ViewBag.ErrorMessage = $"角色Id={model.Id}的信息不存在，请重试。";
-                return View("../Error/NotFound");
+                return View("NotFound");
             }
             else
             {
@@ -126,7 +245,7 @@ namespace SchoolManagement.Controllers
             if (role == null)
             {
                 ViewBag.ErrorMessage = $"角色Id={roleId}的信息不存在，请重试。";
-                return View("../Error/NotFound");
+                return View("NotFound");
             }
 
             var model = new List<UserRoleViewModel>();
@@ -152,7 +271,7 @@ namespace SchoolManagement.Controllers
             if (role == null)
             {
                 ViewBag.ErrorMessage = $"角色Id={roleId}的信息不存在，请重试。";
-                return View("../Error/NotFound");
+                return View("NotFound");
             }
 
             foreach (var model in models)
@@ -178,5 +297,7 @@ namespace SchoolManagement.Controllers
 
             return RedirectToAction(nameof(EditRole), new { Id = roleId });
         }
+
+        #endregion
     }
 }

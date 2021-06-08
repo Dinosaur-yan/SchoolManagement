@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Models;
+using SchoolManagement.Models.EnumTypes;
 using SchoolManagement.ViewModels;
 using System.Threading.Tasks;
 
@@ -76,6 +77,11 @@ namespace SchoolManagement.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (_signInManager.IsSignedIn(User) && User.IsInRole(nameof(RoleEnum.Admin)))
+                    {
+                        return RedirectToAction("listusers", "admin");
+                    }
+
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("index", "home");
                 }
@@ -110,6 +116,12 @@ namespace SchoolManagement.Controllers
             {
                 return Json($"邮箱：{email} 已经被注册时用了。");
             }
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

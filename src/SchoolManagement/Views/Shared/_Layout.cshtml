@@ -29,6 +29,7 @@
 
 		@using Microsoft.AspNetCore.Identity
 		@inject SignInManager<ApplicationUser> _signInManager
+		@inject UserManager<ApplicationUser> _userManager
 		<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 			<a class="navbar-brand" asp-controller="home" asp-action="index">
 				<img src="~/images/student.png" width="30" height="30" />
@@ -49,9 +50,19 @@
 				<ul class="navbar-nav ml-auto">
 					@if (_signInManager.IsSignedIn(User))
 					{
-						<li>
+						if (User.IsInRole("Admin"))
+						{
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">管理</a>
+								<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+									<a class="dropdown-item" asp-controller="admin" asp-action="listusers">用户列表</a>
+									<a class="dropdown-item" asp-controller="admin" asp-action="listroles">角色列表</a>
+								</div>
+							</li>
+						}						
+						<li class="nav-item">
 							<form asp-controller="account" asp-action="logout" method="post">
-								<button type="submit" style="width:auto" class="nav-link btn btn-link py-0">
+								<button type="submit" style="width:auto" class="nav-link btn btn-link">
 									注销 @User.Identity.Name
 								</button>
 							</form>

@@ -33,8 +33,10 @@ namespace SchoolManagement.Controllers
             Student student = _studentRepository.GetStudentById(id);
             if (student == null)
             {
-                Response.StatusCode = StatusCodes.Status404NotFound;
-                return View("StudentNotFound", id);
+                //Response.StatusCode = StatusCodes.Status404NotFound;
+                //return View("StudentNotFound", id);
+                ViewBag.ErrorMessage = $"学生Id={id}的信息不存在，请重试";
+                return View("NotFound");
             }
 
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel
@@ -96,8 +98,11 @@ namespace SchoolManagement.Controllers
 
             if (student == null)
             {
-                Response.StatusCode = StatusCodes.Status404NotFound;
-                return View("StudentNotFound", id);
+                //Response.StatusCode = StatusCodes.Status404NotFound;
+                //return View("StudentNotFound", id);
+
+                ViewBag.ErrorMessage = $"学生Id={id}的信息不存在，请重试";
+                return View("NotFound");
             }
 
             StudentEditViewModel studentEditViewModel = new()
