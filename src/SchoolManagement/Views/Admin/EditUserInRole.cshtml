@@ -4,7 +4,7 @@
 	var roleId = ViewBag.RoleId;
 }
 
-<form asp-controller="admin" asp-action="edituserinrole" asp-route-roleid="@roleId" class="m-3" method="post">
+<form class="m-3" method="post">
 	<div class="card">
 		<div class="card-header">
 			<h2>在此角色中添加或删除用户</h2>
@@ -26,7 +26,7 @@
 			}
 		</div>
 		<div class="card-footer">
-			<button type="submit" class="btn btn-primary" style="width:auto">更新</button>
+			<input type="submit" value="更新" class="btn btn-primary" style="width:auto" />
 			<a asp-controller="admin" asp-action="editrole" asp-route-roleid="@roleId" class="btn btn-primary" style="width:auto">取消</a>
 		</div>
 	</div>
