@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace SchoolManagement.ViewModels
 {
@@ -7,7 +8,7 @@ namespace SchoolManagement.ViewModels
     {
         public UserEditViewModel()
         {
-            Claims = new List<string>();
+            Claims = new List<Claim>();
             Roles = new List<string>();
         }
 
@@ -22,7 +23,7 @@ namespace SchoolManagement.ViewModels
 
         public string City { get; set; }
 
-        public List<string> Claims { get; set; }
+        public IList<Claim> Claims { get; set; }
 
         public List<string> Roles { get; set; }
     }

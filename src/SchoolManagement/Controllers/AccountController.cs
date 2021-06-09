@@ -95,7 +95,6 @@ namespace SchoolManagement.Controllers
             return View(model);
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -116,12 +115,6 @@ namespace SchoolManagement.Controllers
             {
                 return Json($"邮箱：{email} 已经被注册时用了。");
             }
-        }
-
-        [HttpGet]
-        public IActionResult AccessDenied()
-        {
-            return View();
         }
     }
 }

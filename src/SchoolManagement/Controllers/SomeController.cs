@@ -5,7 +5,7 @@ using SchoolManagement.Models.EnumTypes;
 namespace SchoolManagement.Controllers
 {
     [Authorize]
-    public class SomeController1 : Controller
+    public class SomeController : Controller
     {
         [AllowAnonymous]
         public string Anyone()

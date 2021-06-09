@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
 using SchoolManagement.Models;
+using SchoolManagement.Security;
+using System;
 
 namespace SchoolManagement
 {
@@ -56,6 +59,46 @@ namespace SchoolManagement
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddHttpContextAccessor();
+
+            services.AddAuthorization(options =>
+            {
+                // 角色是Admin且声明包含Edit Role值为true 或者 角色是SuperManager
+                //options.AddPolicy("EditRolePolicy", policy => policy.RequireAssertion(context =>
+                //    context.User.IsInRole("Admin") &&
+                //    context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true") ||
+                //    context.User.IsInRole("SuperManager")
+                //));
+
+                options.AddPolicy("EditRolePolicy", policy => policy.AddRequirements(new ManageAdminRolesAndClaimRequirement()));
+
+                options.AddPolicy("DeleteRolePolicy", policy => policy.RequireClaim("Delete Role"));
+
+                options.AddPolicy("AdminRolePolicy", policy => policy.RequireRole("Admin"));
+
+                options.AddPolicy("SuperAdminPolicy", policy => policy.RequireRole("Admin", "User", "SuperManager"));   // 策略结合多个角色进行授权
+
+                // options.InvokeHandlersAfterFailure = false;
+            });
+
+            services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // 修改拒绝访问的路由地址
+                options.AccessDeniedPath = new PathString("/Admin/AccessDenied");
+
+                // 统一系统全局的Cookie名称
+                options.Cookie.Name = "SchoolManagementCookie";
+
+                // 登录用户Cookie的有效期
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+
+                // 是否对Cookie启用滑动过期时间
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<IdentityRole>
+@inject IAuthorizationService authorizationService
 @{
 	ViewBag.Title = "角色列表";
 }
@@ -15,7 +16,10 @@
 			</div>
 			<div class="card-footer">
 				<form asp-controller="admin" asp-action="deleterole" asp-route-id="@role.Id" method="post">
-					<a asp-controller="admin" asp-action="editrole" asp-route-id="@role.Id" class="btn btn-primary">编辑</a>
+					@if ((await authorizationService.AuthorizeAsync(User,"EditRolePolicy")).Succeeded)
+					{
+						<a asp-controller="admin" asp-action="editrole" asp-route-id="@role.Id" class="btn btn-primary">编辑</a>
+					}
 					@*<a href="#" class="btn btn-danger">删除</a>*@
 					<span id="confirmDeletSpan_@role.Id" style="display:none">
 						<span>你确定你要删除？</span>

@@ -29,6 +29,8 @@ namespace SchoolManagement.Controllers
 
         #region User
 
+        #region 用户管理
+
         public IActionResult ListUsers()
         {
             var users = _userManager.Users.ToList();
@@ -54,7 +56,7 @@ namespace SchoolManagement.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 City = user.City,
-                Claims = userClaims.Select(t => t.Value).ToList(),
+                Claims = userClaims,
                 Roles = userRoles.ToList()
             };
             return View(model);
@@ -114,6 +116,10 @@ namespace SchoolManagement.Controllers
             return View(nameof(ListUsers));
         }
 
+        #endregion
+
+        #region 用户角色管理
+
         [HttpGet]
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
@@ -142,6 +148,7 @@ namespace SchoolManagement.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(string userId, List<RolesInUserViewModel> models)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -170,6 +177,10 @@ namespace SchoolManagement.Controllers
 
             return RedirectToAction(nameof(EditUser), new { id = userId });
         }
+
+        #endregion
+
+        #region 用户声明管理
 
         [HttpGet]
         public async Task<IActionResult> ManageUserClaims(string userId)
@@ -205,7 +216,6 @@ namespace SchoolManagement.Controllers
         public async Task<IActionResult> ManageUserClaims(UserClaimsViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
-
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"无法找到ID为{model.UserId}的用户";
@@ -230,12 +240,15 @@ namespace SchoolManagement.Controllers
             }
 
             return RedirectToAction(nameof(EditUser), new { Id = model.UserId });
-
         }
 
         #endregion
 
+        #endregion
+
         #region Role
+
+        #region 角色管理
 
         [HttpGet]
         public IActionResult ListRoles()
@@ -276,44 +289,8 @@ namespace SchoolManagement.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteRole(string id)
-        {
-            var role = await _roleManager.FindByIdAsync(id);
-            if (role == null)
-            {
-                ViewBag.ErrorMessage = $"无法找到Id为{id}的用户";
-                return View("NotFound");
-            }
-            else
-            {
-                try
-                {
-                    var result = await _roleManager.DeleteAsync(role);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction(nameof(ListRoles));
-                    }
-
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                }
-                catch (DbUpdateException ex)
-                {
-                    _logger.LogError($"发生异常：{ex}");
-
-                    ViewBag.ErrorTitle = $"角色：{role.Name} 正在被使用中...";
-                    ViewBag.ErrorMessage = $"无法删除{role.Name}角色，因为此角色中已经存在用户。如果您想删除此角色，需要先从该角色中删除用户，然后尝试删除该角色本身。";
-
-                    return View("Error");
-                }
-            }
-            return View(nameof(ListRoles));
-        }
-
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -371,6 +348,48 @@ namespace SchoolManagement.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [Authorize(Policy = "SuperAdminPolicy")]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role == null)
+            {
+                ViewBag.ErrorMessage = $"无法找到Id为{id}的用户";
+                return View("NotFound");
+            }
+            else
+            {
+                try
+                {
+                    var result = await _roleManager.DeleteAsync(role);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction(nameof(ListRoles));
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError($"发生异常：{ex}");
+
+                    ViewBag.ErrorTitle = $"角色：{role.Name} 正在被使用中...";
+                    ViewBag.ErrorMessage = $"无法删除{role.Name}角色，因为此角色中已经存在用户。如果您想删除此角色，需要先从该角色中删除用户，然后尝试删除该角色本身。";
+
+                    return View("Error");
+                }
+            }
+            return View(nameof(ListRoles));
+        }
+
+        #endregion
+
+        #region 角色下用户管理
 
         [HttpGet]
         public async Task<IActionResult> EditUserInRole(string roleId)
@@ -435,5 +454,15 @@ namespace SchoolManagement.Controllers
         }
 
         #endregion
+
+        #endregion
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }
