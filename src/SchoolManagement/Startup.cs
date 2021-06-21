@@ -46,6 +46,12 @@ namespace SchoolManagement
 
             services.AddScoped<IStudentRepository, StudentRepository>();
 
+            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+            });
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 6;    // 密码最小长度验证
@@ -54,11 +60,14 @@ namespace SchoolManagement
                 options.Password.RequireLowercase = false;  // 密码是否必须包含小写字母
                 options.Password.RequireUppercase = false;  // 密码是否必须包含大写字母
                 options.Password.RequireDigit = true;  // 密码是否必须包含数字
+
+                // options.SignIn.RequireConfirmedEmail = true;    // 电子邮箱的验证
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddHttpContextAccessor();
 

@@ -29,7 +29,7 @@ namespace SchoolManagement.Security
             string loggedInAdminId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
             string adminIdBeingEdited = _httpContextAccessor.HttpContext.Request.Query["userId"];
-            
+
             // 判断用户是否拥有Admin角色，并且拥有claim.Type == "Edit Role"且值为true
             if (context.User.IsInRole("Admin") && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true"))
             {
