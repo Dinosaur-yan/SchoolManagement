@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+	ViewBag.Title = "用户列表";
+}
+
+@if (Model != null && Model.Any())
+{
+	<a asp-controller="account" asp-action="register" class="btn btn-primary mb-3" style="width:auto">
+		创建用户
+	</a>
+	foreach (var user in Model)
+	{
+		<div class="card mb-3">
+			<div class="card-header">角色Id: @user.Id</div>
+			<div class="card-body">
+				<h5 class="card-title">@user.UserName</h5>
+			</div>
+			<div class="card-footer">
+				<form asp-controller="admin" asp-action="deleteuser" asp-route-id="@user.Id" method="post">
+					<a asp-controller="admin" asp-action="edituser" asp-route-id="@user.Id" class="btn btn-primary">编辑</a>
+					@*<a asp-controller="admin" asp-action="deleteuser" asp-route-id="@user.Id" class="btn btn-danger" 
+					   onclick="return confirm('读者确定要删除用户：@user.UserName 吗？')"
+					>
+						删除
+					</a>*@
+
+					<span id="confirmDeletSpan_@user.Id" style="display:none">
+						<span>你确定你要删除？</span>
+						<button type="submit" class="btn btn-danger">是</button>
+						<a href="#" class="btn btn-primary" onclick="confirmDelete('@user.Id', false)">否</a>
+					</span>
+					<span id="deleteSpan_@user.Id">
+						<a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true)">删除</a>
+					</span>
+				</form>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<div class="card">
+		<div class="card-header">尚未创建用户</div>
+		<div class="card-body">
+			<h5 class="card-title">单击下面按钮创建用户</h5>
+			<a asp-controller="account" asp-action="register" class="btn btn-primary" style="width:auto">
+				创建用户
+			</a>
+		</div>
+	</div>
+}
+
+@section Scripts{
+	<script type="text/javascript" language="javascript" asp-append-version="true">
+		function confirmDelete(uniqueId, isDeleteClicked){
+			var deleteSpan = "deleteSpan_" + uniqueId;
+			var confirmDeleteSpan = "confirmDeletSpan_" + uniqueId;
+
+			if(isDeleteClicked){
+				$("#" + deleteSpan).hide();
+				$("#" + confirmDeleteSpan).show();
+			} else {				
+				$("#" + deleteSpan).show();
+				$("#" + confirmDeleteSpan).hide();
+			}
+		}
+	</script>
+}

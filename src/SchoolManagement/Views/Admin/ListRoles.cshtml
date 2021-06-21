@@ -1,0 +1,63 @@
+﻿@model IEnumerable<IdentityRole>
+@inject IAuthorizationService authorizationService
+@{
+	ViewBag.Title = "角色列表";
+}
+
+@if (Model != null && Model.Any())
+{
+	<a asp-controller="admin" asp-action="createrole" class="btn btn-primary mb-3" style="width:auto">添加新角色</a>
+	foreach (var role in Model)
+	{
+		<div class="card mb-3">
+			<div class="card-header">角色Id: @role.Id</div>
+			<div class="card-body">
+				<h5 class="card-title">@role.Name</h5>
+			</div>
+			<div class="card-footer">
+				<form asp-controller="admin" asp-action="deleterole" asp-route-id="@role.Id" method="post">
+					@if ((await authorizationService.AuthorizeAsync(User,"EditRolePolicy")).Succeeded)
+					{
+						<a asp-controller="admin" asp-action="editrole" asp-route-id="@role.Id" class="btn btn-primary">编辑</a>
+					}
+					@*<a href="#" class="btn btn-danger">删除</a>*@
+					<span id="confirmDeletSpan_@role.Id" style="display:none">
+						<span>你确定你要删除？</span>
+						<button type="submit" class="btn btn-danger">是</button>
+						<a href="#" class="btn btn-primary" onclick="confirmDelete('@role.Id', false)">否</a>
+					</span>
+					<span id="deleteSpan_@role.Id">
+						<a href="#" class="btn btn-danger" onclick="confirmDelete('@role.Id', true)">删除</a>
+					</span>
+				</form>
+			</div>
+		</div>
+	}
+}
+else
+{
+	<div class="card">
+		<div class="card-header">尚未创建任何角色</div>
+		<div class="card-body">
+			<h5 class="card-title">单击下面的按钮创建角色</h5>
+			<a asp-controller="admin" asp-action="createrole" class="btn btn-primary mb-3" style="width:auto">添加新角色</a>
+		</div>
+	</div>
+}
+
+@section Scripts{
+	<script type="text/javascript" language="javascript" asp-append-version="true">
+		function confirmDelete(uniqueId, isDeleteClicked){
+			var deleteSpan = "deleteSpan_" + uniqueId;
+			var confirmDeleteSpan = "confirmDeletSpan_" + uniqueId;
+
+			if(isDeleteClicked){
+				$("#" + deleteSpan).hide();
+				$("#" + confirmDeleteSpan).show();
+			} else {				
+				$("#" + deleteSpan).show();
+				$("#" + confirmDeleteSpan).hide();
+			}
+		}
+	</script>
+}

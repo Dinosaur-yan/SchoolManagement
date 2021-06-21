@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ namespace SchoolManagement.Controllers
         }
 
         [Route("error")]
+        [AllowAnonymous]
         public IActionResult Error()
         {
             var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerFeature>();
