@@ -13,13 +13,19 @@ namespace SchoolManagement.Infrastructure
 
         }
 
+        public DbSet<Course> Courses { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<StudentCourse> StudentCourses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Seed();
+
+            modelBuilder.Entity<Course>().ToTable("Course");
+            modelBuilder.Entity<Student>().ToTable("Student");
+            modelBuilder.Entity<StudentCourse>().ToTable("StudentCourse");
 
             var foreignKeys = modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys());
             foreach (var foreignKey in foreignKeys)

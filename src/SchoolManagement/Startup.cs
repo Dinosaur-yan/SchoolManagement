@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
+using SchoolManagement.Infrastructure.Repositories;
 using SchoolManagement.Models;
 using SchoolManagement.Security;
 using System;
@@ -45,6 +46,7 @@ namespace SchoolManagement
                 .AddXmlSerializerFormatters();
 
             services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddTransient(typeof(IRepository<,>), typeof(RepositoryBase<,>));
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
