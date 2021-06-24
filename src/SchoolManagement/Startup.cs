@@ -93,6 +93,8 @@ namespace SchoolManagement
                 // options.InvokeHandlersAfterFailure = false;
             });
 
+            services.AddDataProtection();
+
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
             services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
 

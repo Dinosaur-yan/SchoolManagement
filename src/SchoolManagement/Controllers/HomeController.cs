@@ -1,36 +1,52 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SchoolManagement.DataRepositories;
+using SchoolManagement.Infrastructure.Repositories;
 using SchoolManagement.Models;
 using SchoolManagement.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SchoolManagement.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IDataProtector _protector;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IStudentRepository _studentRepository;
+        private readonly IRepository<Student, int> _studentRepository;
 
-        public HomeController(IWebHostEnvironment webHostEnvironment, IStudentRepository studentRepository)
+        public HomeController(
+            IDataProtectionProvider provider,
+            IWebHostEnvironment webHostEnvironment,
+            IRepository<Student, int> studentRepository
+            )
         {
+            _protector = provider.CreateProtector("school_management");
             _webHostEnvironment = webHostEnvironment;
             _studentRepository = studentRepository;
         }
 
-        public ViewResult Index()
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Student> students = _studentRepository.GetAllStudents();
+            IEnumerable<Student> students = await _studentRepository.GetAllListAsync();
+            if (students != null && students.Any())
+            {
+                students = students.Select(t =>
+                {
+                    t.EncryptedId = _protector.Protect(t.Id.ToString());
+                    return t;
+                });
+            }
             return View(students);
         }
 
-        public ViewResult Details(int id)
+        public async Task<IActionResult> Details(string id)
         {
-            Student student = _studentRepository.GetStudentById(id);
+            Student student = await DecryptedStudentAsync(id);
             if (student == null)
             {
                 //Response.StatusCode = StatusCodes.Status404NotFound;
@@ -82,19 +98,21 @@ namespace SchoolManagement.Controllers
                     Major = model.Major,
                     Email = model.Email,
                     PhotoPath = uniqueFileName,
+                    EnrollmentDate = model.EnrollmentDate
                 };
 
                 _studentRepository.Insert(newStudent);
-                return RedirectToAction(nameof(Details), new { id = newStudent.Id });
+                var encryptedId = _protector.Protect(newStudent.Id.ToString());
+                return RedirectToAction(nameof(Details), new { id = encryptedId });
             }
 
             return View();
         }
 
         [HttpGet]
-        public ViewResult Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            Student student = _studentRepository.GetStudentById(id);
+            Student student = await DecryptedStudentAsync(id);
 
             if (student == null)
             {
@@ -107,25 +125,27 @@ namespace SchoolManagement.Controllers
 
             StudentEditViewModel studentEditViewModel = new()
             {
-                Id = student.Id,
+                Id = id,
                 Name = student.Name,
                 Email = student.Email,
                 Major = student.Major,
-                ExistingPhotoPath = student.PhotoPath
+                ExistingPhotoPath = student.PhotoPath,
+                EnrollmentDate = student.EnrollmentDate,
             };
             return View(studentEditViewModel);
         }
 
         [HttpPost]
-        public IActionResult Edit(StudentEditViewModel model)
+        public async Task<IActionResult> Edit(StudentEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                Student student = _studentRepository.GetStudentById(model.Id);
+                Student student = await DecryptedStudentAsync(model.Id);
 
                 student.Name = model.Name;
                 student.Email = model.Email;
                 student.Major = model.Major;
+                student.EnrollmentDate = model.EnrollmentDate;
                 student.PhotoPath = ProcessUploadedFile(null, model.Photos);
 
                 Student updatedstudent = _studentRepository.Update(student);
@@ -133,6 +153,20 @@ namespace SchoolManagement.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var student = await _studentRepository.FirstOrDefaultAsync(s => s.Id == id);
+            if (student == null)
+            {
+                ViewBag.ErrorMessage = $"学生Id={id}的信息不存在，请重试";
+                return View("NotFound");
+            }
+
+            await _studentRepository.DeleteAsync(s => s.Id == id);
+            return RedirectToAction(nameof(Index));
         }
 
         private string ProcessUploadedFile(string originalPath, List<IFormFile> files)
@@ -172,6 +206,19 @@ namespace SchoolManagement.Controllers
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 解密学生信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private async Task<Student> DecryptedStudentAsync(string id)
+        {
+            string decryptedId = _protector.Unprotect(id);
+            int decryptedStudentId = Convert.ToInt32(decryptedId);
+            Student student = await _studentRepository.FirstOrDefaultAsync(s => s.Id == decryptedStudentId);
+            return student;
         }
     }
 }
