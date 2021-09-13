@@ -1,4 +1,7 @@
 ﻿using SchoolManagement.Models.EnumTypes;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolManagement.Models
 {
@@ -28,5 +31,15 @@ namespace SchoolManagement.Models
         /// 头像
         /// </summary>
         public string PhotoPath { get; set; }
+
+        [NotMapped]
+        public string EncryptedId { get; set; }
+
+        /// <summary>
+        /// 入学时间
+        /// </summary>
+        public DateTime EnrollmentDate { get; set; }
+
+        public ICollection<StudentCourse> StudentCourses { get; set; }
     }
 }

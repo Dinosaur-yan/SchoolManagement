@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SchoolManagement.Models.EnumTypes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,5 +24,11 @@ namespace SchoolManagement.ViewModels
 
         [Display(Name = "头像")]
         public List<IFormFile> Photos { get; set; }
+
+        /// <summary>
+        /// 入学时间
+        /// </summary>
+        [Display(Name = "入学时间")]
+        public DateTime EnrollmentDate { get; set; }
     }
 }

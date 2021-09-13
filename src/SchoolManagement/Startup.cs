@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchoolManagement.Application.Students;
 using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
+using SchoolManagement.Infrastructure.Repositories;
 using SchoolManagement.Models;
 using SchoolManagement.Security;
 using System;
@@ -45,6 +47,9 @@ namespace SchoolManagement
                 .AddXmlSerializerFormatters();
 
             services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddTransient(typeof(IRepository<,>), typeof(RepositoryBase<,>));
+
+            services.AddScoped<IStudentService, StudentService>();
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
@@ -90,6 +95,8 @@ namespace SchoolManagement
 
                 // options.InvokeHandlersAfterFailure = false;
             });
+
+            services.AddDataProtection();
 
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
             services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
