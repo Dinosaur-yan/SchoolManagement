@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SchoolManagement.Application.Dtos;
+using SchoolManagement.Application.Students;
 using SchoolManagement.Infrastructure.Repositories;
 using SchoolManagement.Models;
 using SchoolManagement.ViewModels;
@@ -9,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace SchoolManagement.Controllers
@@ -17,30 +21,39 @@ namespace SchoolManagement.Controllers
     {
         private readonly IDataProtector _protector;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IStudentService _studentService;
         private readonly IRepository<Student, int> _studentRepository;
 
         public HomeController(
             IDataProtectionProvider provider,
             IWebHostEnvironment webHostEnvironment,
+            IStudentService studentService,
             IRepository<Student, int> studentRepository
             )
         {
             _protector = provider.CreateProtector("school_management");
             _webHostEnvironment = webHostEnvironment;
+            _studentService = studentService;
             _studentRepository = studentRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? currentPage, int pageSize, string searchString, string sortBy = "Id")
         {
-            IEnumerable<Student> students = await _studentRepository.GetAllListAsync();
-            if (students != null && students.Any())
+            ViewBag.CurrentFilter = searchString?.Trim();
+
+            PaginationModel paginationModel = new()
             {
-                students = students.Select(t =>
-                {
-                    t.EncryptedId = _protector.Protect(t.Id.ToString());
-                    return t;
-                });
-            }
+                Count = await _studentRepository.CountAsync(),
+                CurrentPage = currentPage ?? 1
+            };
+
+            var students = await _studentService.GetPaginatedResult(paginationModel.CurrentPage, searchString, sortBy);
+
+            paginationModel.Data = students?.Select(t =>
+            {
+                t.EncryptedId = _protector.Protect(t.Id.ToString());
+                return t;
+            }).ToList();
             return View(students);
         }
 

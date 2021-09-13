@@ -3,13 +3,31 @@
 	ViewBag.Title = "学生列表页面";
 }
 
-<div class="row">
-	<table class="table table-bordered table-striped">
+<form asp-action="index" method="get">
+	<div class="form-actions no-color">
+		<p>
+			请输入名称：
+			<input type="text" name="SearchString" value="@ViewBag.CurrentFilter" />
+			<input type="submit" value="查询" class="btn btn-outline-dark" /> | 
+			<a asp-action="index">返回所有列表</a> | 
+			<a asp-action="create">添加学生</a>
+		</p>
+	</div>
+</form>
+
+<div class="row" align="center">
+	<table class="table table-bordered table-striped tablecenter" style="text-align:center">
 		<thead>
 			<tr>
 				<th scope="col">头像</th>
-				<th scope="col">名字</th>
-				<th scope="col">邮箱地址</th>
+				<th scope="col" class="sort-link">
+					<a asp-action="index" asp-route-sortby="Name">名字</a>
+					<a asp-action="index" asp-route-sortby="Name desc" class="pl-3">降序</a>
+				</th>
+				<th scope="col">
+					<a asp-action="index" asp-route-sortby="Email">邮箱地址</a>
+					<a asp-action="index" asp-route-sortby="Email desc" class="pl-3">降序</a>
+				</th>
 				<th scope="col">主修科目</th>
 				<th scope="col">入学时间</th>
 				<th scope="col">操作</th>

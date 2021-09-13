@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchoolManagement.Application.Students;
 using SchoolManagement.CustomerMiddlewares;
 using SchoolManagement.DataRepositories;
 using SchoolManagement.Infrastructure;
@@ -47,6 +48,8 @@ namespace SchoolManagement
 
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddTransient(typeof(IRepository<,>), typeof(RepositoryBase<,>));
+
+            services.AddScoped<IStudentService, StudentService>();
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
